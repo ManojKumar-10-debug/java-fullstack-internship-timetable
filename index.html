@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java Full-Stack Internship Timetable</title>
+  <style>
+    :root {
+      --navy: #14233b;
+      --blue: #2e68db;
+      --muted: #718096;
+      --line: #dfe7ef;
+      --paper: #fff;
+      --bg: #edf2f7;
+      --java: #e9f0ff;
+      --backend: #e4f7ee;
+      --frontend: #f1eaff;
+      --devops: #fff0dc;
+      --soft: #ffe7ed;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 42px clamp(14px, 4vw, 70px);
+      color: var(--navy);
+      background: var(--bg);
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .page { width: min(1220px, 100%); margin: auto; }
+
+    .heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 25px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 4vw, 45px);
+      letter-spacing: -.06em;
+      line-height: 1;
+    }
+
+    .heading p:last-child { margin: 9px 0 0; color: var(--muted); }
+
+    .week {
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--blue);
+      background: var(--paper);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .table-shell {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 22px 60px rgba(28, 52, 81, .12);
+    }
+
+    .timetable {
+      width: 100%;
+      min-width: 930px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    .timetable th,
+    .timetable td {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .timetable th:last-child,
+    .timetable td:last-child { border-right: 0; }
+    .timetable tbody tr:last-child td { border-bottom: 0; }
+
+    .timetable thead th {
+      height: 92px;
+      padding: 14px 10px;
+      background: #f8fafc;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .timetable thead th:first-child {
+      width: 105px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .day {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .date { font-size: 22px; }
+
+    .today {
+      color: var(--blue) !important;
+      background: #f0f5ff !important;
+    }
+
+    .today .date {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .timetable td {
+      height: 118px;
+      padding: 9px;
+      vertical-align: top;
+    }
+
+    .timetable td.time {
+      width: 105px;
+      padding: 17px 13px 10px 0;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .session {
+      height: 100%;
+      padding: 12px 11px;
+      border-left: 4px solid;
+      border-radius: 9px;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .session:hover {
+      position: relative;
+      z-index: 1;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px rgba(22, 45, 75, .14);
+    }
+
+    .session strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .session span {
+      display: block;
+      color: #637287;
+      font-size: 11px;
+    }
+
+    .session em {
+      display: block;
+      margin-top: 7px;
+      color: #7c8998;
+      font-size: 10px;
+      font-style: normal;
+    }
+
+    .java { border-color: #5e86ed; background: var(--java); }
+    .backend { border-color: #52bd91; background: var(--backend); }
+    .frontend { border-color: #a182e8; background: var(--frontend); }
+    .devops { border-color: #e4a04f; background: var(--devops); }
+    .soft { border-color: #df718a; background: var(--soft); }
+
+    .free {
+      background:
+        linear-gradient(135deg, transparent 49%, #f0f3f6 50%, transparent 51%);
+      background-size: 8px 8px;
+      opacity: .55;
+    }
+
+    .caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 25px 12px; }
+      .heading { align-items: start; flex-direction: column; }
+      .week { align-self: stretch; text-align: center; }
+      .table-shell { overflow-x: auto; }
+      .caption { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="heading">
+      <div>
+        <p class="eyebrow">Cohort 04 · Java full-stack internship</p>
+        <h1>Weekly course timetable</h1>
+        <p>Live sessions, labs, mentor reviews, and project hours.</p>
+      </div>
+      <div class="week">Week 08 · Oct 05–09, 2026</div>
+    </header>
+
+    <div class="table-shell">
+      <table class="timetable" aria-label="Java full-stack internship weekly timetable">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th><span class="day">Monday</span><span class="date">05</span></th>
+            <th><span class="day">Tuesday</span><span class="date">06</span></th>
+            <th class="today"><span class="day">Wednesday</span><span class="date">07</span></th>
+            <th><span class="day">Thursday</span><span class="date">08</span></th>
+            <th><span class="day">Friday</span><span class="date">09</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="time">09:00<br>—<br>10:30</td>
+            <td><article class="session java"><strong>Java &amp; OOP</strong><span>Room 204 · Arjun Mehta</span><em>Inheritance and interfaces</em></article></td>
+            <td><article class="session backend"><strong>Spring Boot</strong><span>Lab 02 · Nisha Rao</span><em>REST controllers</em></article></td>
+            <td><article class="session frontend"><strong>React foundations</strong><span>Studio 01 · Leah Thomas</span><em>Components and props</em></article></td>
+            <td><article class="session backend"><strong>Database design</strong><span>Room 206 · Arjun Mehta</span><em>JPA relationships</em></article></td>
+            <td><article class="session soft"><strong>Career workshop</strong><span>Hall A · Priya Shah</span><em>Technical storytelling</em></article></td>
+          </tr>
+          <tr>
+            <td class="time">10:45<br>—<br>12:15</td>
+            <td><article class="session java"><strong>Java lab</strong><span>Lab 01 · Arjun Mehta</span><em>Collections challenge</em></article></td>
+            <td><article class="session backend"><strong>API security</strong><span>Room 204 · Nisha Rao</span><em>JWT authentication</em></article></td>
+            <td><article class="session frontend"><strong>TypeScript</strong><span>Studio 01 · Leah Thomas</span><em>Typed API data</em></article></td>
+            <td><article class="session backend"><strong>SQL workshop</strong><span>Lab 02 · Omar Khan</span><em>Queries and indexes</em></article></td>
+            <td><article class="session soft"><strong>Code review</strong><span>Mentor room · Panel</span><em>Weekly checkpoint</em></article></td>
+          </tr>
+          <tr>
+            <td class="time">12:15<br>—<br>13:15</td>
+            <td><article class="session devops"><strong>Lunch break</strong><span>Student lounge</span><em>60 minutes</em></article></td>
+            <td><article class="session devops"><strong>Lunch break</strong><span>Student lounge</span><em>60 minutes</em></article></td>
+            <td><article class="session devops"><strong>Lunch break</strong><span>Student lounge</span><em>60 minutes</em></article></td>
+            <td><article class="session devops"><strong>Lunch break</strong><span>Student lounge</span><em>60 minutes</em></article></td>
+            <td><article class="session devops"><strong>Lunch break</strong><span>Student lounge</span><em>60 minutes</em></article></td>
+          </tr>
+          <tr>
+            <td class="time">13:15<br>—<br>14:45</td>
+            <td><article class="session backend"><strong>Team project</strong><span>Project room · Mentor-led</span><em>Build the task API</em></article></td>
+            <td><article class="session free"></article></td>
+            <td><article class="session java"><strong>Testing with JUnit</strong><span>Room 204 · Arjun Mehta</span><em>Unit and integration tests</em></article></td>
+            <td><article class="session devops"><strong>Docker &amp; CI/CD</strong><span>Lab 03 · Omar Khan</span><em>Containerize the service</em></article></td>
+            <td><article class="session backend"><strong>Demo preparation</strong><span>Project room · Team session</span><em>Capstone presentation</em></article></td>
+          </tr>
+          <tr>
+            <td class="time">15:00<br>—<br>16:00</td>
+            <td><article class="session free"></article></td>
+            <td><article class="session java"><strong>Problem solving</strong><span>Room 108 · Arjun Mehta</span><em>Algorithms practice</em></article></td>
+            <td><article class="session free"></article></td>
+            <td><article class="session frontend"><strong>Frontend lab</strong><span>Studio 01 · Leah Thomas</span><em>Connect the dashboard</em></article></td>
+            <td><article class="session soft"><strong>Weekly retrospective</strong><span>Room 101 · Cohort 04</span><em>Wins and next steps</em></article></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="caption"><span>Hover over a session for emphasis · striped cells are open study time</span><span>8 sessions · 12.5 learning hours</span></div>
+  </main>
+</body>
+</html>
